@@ -645,6 +645,11 @@ int assoc_client_response(wifi_app_t *app, wifi_provider_response_t *provider_re
         return RETURN_ERR;
     }
 
+    if (radio_index >= MAX_NUM_RADIOS) {
+        wifi_util_error_print(WIFI_EM, "%s:%d: invalid radio_index: %d\n", __func__, __LINE__, radio_index);
+        return RETURN_ERR;
+    }
+
     if (convert_vap_index_to_name(&wifi_mgr->hal_cap.wifi_prop, vap_index, vap_name) != RETURN_OK) {
         wifi_util_error_print(WIFI_EM,
             "%s:%d: convert_vap_index_to_name failed for vap_index : %d\r\n", __func__, __LINE__,
@@ -658,6 +663,13 @@ int assoc_client_response(wifi_app_t *app, wifi_provider_response_t *provider_re
             "%s:%d: convert_vap_name_to_array_index failed for vap_name: %s\r\n", __func__,
             __LINE__, vap_name);
         return RETURN_ERR;
+    }
+
+    unsigned int num_stats = provider_response->stat_array_size;
+    if (num_stats > BSS_MAX_NUM_STATIONS) {
+        wifi_util_error_print(WIFI_EM, "%s:%d: stat_array_size %u exceeds %d, clamping\n",
+            __func__, __LINE__, num_stats, BSS_MAX_NUM_STATIONS);
+        num_stats = BSS_MAX_NUM_STATIONS;
     }
 
     memset(client_assoc_stats[radio_index].client_assoc_data[vap_array_index].assoc_stats, 0,
