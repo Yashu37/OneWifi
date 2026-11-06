@@ -1238,7 +1238,8 @@ static void convert_variant_to_str(wifi_ieee80211Variant_t variant, char *str, s
         }
     }
 
-    str[strlen(str) - 1] = '\0';
+    size_t _l = strlen(str);
+    if (_l > 0) str[_l - 1] = '\0';
     wifi_util_dbg_print(WIFI_BLASTER, "%s:%d 0x%X converted to %s\n",__func__,__LINE__, variant, str);
 }
 #endif // _PP203X_PRODUCT_REQ_ , _GREXT02ACTS_PRODUCT_REQ_
